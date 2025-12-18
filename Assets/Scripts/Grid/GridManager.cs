@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class GridManager : MonoBehaviour
 {
@@ -6,8 +7,8 @@ public class GridManager : MonoBehaviour
     private const int GridPosZ = 25;
 
     [Header("Grid Settings")]
-    [SerializeField] private int gridX = 10;
-    [SerializeField] private int gridY = 12;
+    [SerializeField] public int gridX = 10;
+    [SerializeField] public int gridY = 12;
 
     [Header("Components")]
     [SerializeField] private GameObject blockPrefab;
@@ -25,7 +26,7 @@ public class GridManager : MonoBehaviour
     public Material Cyan;
     public Material Purple;
 
-    private Block[,] grid;
+    public Block[,] grid { get; private set; }
 
     private void Awake()
     {
@@ -39,24 +40,12 @@ public class GridManager : MonoBehaviour
         {
             Instance = this;
         }
-    }
-
-    private void Start()
-    {
         InitializeGrid();
     }
 
     private void Update()
     {
-        for (int i = 0; i < gridX; i++)
-        {
-            // Check if any of the bottom row blocks is missing
-            if (grid[i, 0] == null)
-            {   
-                // if a bottom block is missing drop the whole column one
-                DropDownColumn(i);
-            }
-        }
+        CheckForMissingBlock();
     }
 
     private void InitializeGrid()
@@ -67,18 +56,24 @@ public class GridManager : MonoBehaviour
             {
                 // Spawn block on grid
                 Vector2 blockPos = new(x, y);
-                GameObject block = Instantiate(blockPrefab, new Vector3(blockPos.x, blockPos.y, GridPosZ), Quaternion.identity);
-                grid[x,y] = block.GetComponent<Block>();
+                GameObject block = Instantiate
+                (
+                    blockPrefab, 
+                    new Vector3(blockPos.x, blockPos.y, GridPosZ), 
+                    Quaternion.identity
+                );
+                Block blockComponent = block.GetComponent<Block>();
+                // Add it to the block matrix
+                grid[x,y] = blockComponent;
                 block.transform.SetParent(transform);
                 // Change block color
                 block.GetComponent<Block>().Initialize(level.gridLayout[x + y * gridX]);
             }
         }
     }
-
+    
     private void DropDownColumn(int x)
     {
-
         for (int currentRow = 0; currentRow < gridY; currentRow++)
         {
             Block block = grid[x, currentRow];
@@ -98,5 +93,19 @@ public class GridManager : MonoBehaviour
         Vector3 newPos = new(x, y, GridPosZ);
         // TODO: Apply lerp to block movement
         block.transform.position = newPos;
+    }
+
+    private void CheckForMissingBlock()
+    {
+        // TODO: THIS SHOULD ONLY BE CALLED WHEN DESTROYING A BLOCK?
+        for (int i = 0; i < gridX; i++)
+        {
+            // Check if any of the bottom row blocks is missing
+            if (grid[i, 0] == null)
+            {   
+                // if a bottom block is missing drop the whole column one
+                DropDownColumn(i);
+            }
+        }
     }
 }

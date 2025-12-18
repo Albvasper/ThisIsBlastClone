@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Threading;
 
 public enum BlockColor
 {
@@ -17,11 +19,15 @@ public class Block : MonoBehaviour
     public BlockColor Color;
     private MeshRenderer meshRenderer;
     
-    private void Awake()
+    protected virtual void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
+    /// <summary>
+    /// Assign a color and material to the block.
+    /// </summary>
+    /// <param name="color">Color that will be assigned.</param>
     public void Initialize(BlockColor color)
     {
         switch (color)
@@ -35,5 +41,31 @@ public class Block : MonoBehaviour
             case BlockColor.Cyan: meshRenderer.material = GridManager.Instance.Cyan; break;
             case BlockColor.Purple: meshRenderer.material = GridManager.Instance.Purple; break;
         }
+        Color = color;
+    }
+    
+    /// <summary>
+    /// Handles destruction of the block
+    /// </summary>
+    public void Kill()
+    {
+        StartCoroutine(DeathAnimation());
+    }
+
+
+    private IEnumerator DeathAnimation()
+    {
+        Vector3 startingScale = transform.localScale;
+        Vector3 finalScale = Vector3.zero;
+        const float duration = 0.1f;
+        float counter = 0;
+        
+        while(counter < duration)
+        {
+            counter += Time.deltaTime;
+            transform.localScale = Vector3.Lerp(startingScale, finalScale, counter/duration);
+            yield return null;            
+        }
+        Destroy(gameObject);
     }
 }
