@@ -15,9 +15,7 @@ public class GridManager : MonoBehaviour
 
     [Header("Components")]
     [SerializeField] private GameObject blockPrefab;
-
-    [Header("Level")]
-    [SerializeField] private Level level;
+    [SerializeField] private Transform gridSpawnPoint;
 
     [Header("Block Materials")]
     public Material Red;
@@ -30,8 +28,13 @@ public class GridManager : MonoBehaviour
     public Material Purple;
 
     public Block[,] grid { get; private set; }
+    private LevelManager levelManager;
 
     private void Awake()
+    {
+        levelManager = GetComponent<LevelManager>();
+    }
+    private void OnEnable()
     {
         grid = new Block[gridX, gridY];
         // Singleton
@@ -51,6 +54,7 @@ public class GridManager : MonoBehaviour
         CheckForMissingBlock();
     }
 
+    // Place blocks on the alrady determined grid size
     private void InitializeGrid()
     {
         for (int y = 0; y < gridY; y++)
@@ -68,9 +72,9 @@ public class GridManager : MonoBehaviour
                 Block blockComponent = block.GetComponent<Block>();
                 // Add it to the block matrix
                 grid[x,y] = blockComponent;
-                block.transform.SetParent(transform);
+                block.transform.SetParent(gridSpawnPoint);
                 // Change block color
-                block.GetComponent<Block>().Initialize(level.gridLayout[x + y * gridX]);
+                block.GetComponent<Block>().Initialize(levelManager.level.gridLayout[x + y * gridX]);
             }
         }
     }
