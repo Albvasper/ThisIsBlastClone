@@ -8,6 +8,7 @@ public class GridManager : MonoBehaviour
 {
     public static GridManager Instance { get; private set; }
     private const int GridPosZ = 25;
+    public Block[,] grid { get; private set; }
 
     [Header("Grid Settings")]
     [SerializeField] public int gridX = 10;
@@ -26,17 +27,11 @@ public class GridManager : MonoBehaviour
     public Material Pink;
     public Material Cyan;
     public Material Purple;
-
-    public Block[,] grid { get; private set; }
+    
     private LevelManager levelManager;
 
     private void Awake()
     {
-        levelManager = GetComponent<LevelManager>();
-    }
-    private void OnEnable()
-    {
-        grid = new Block[gridX, gridY];
         // Singleton
         if (Instance != null && Instance != this)
         {
@@ -46,6 +41,12 @@ public class GridManager : MonoBehaviour
         {
             Instance = this;
         }
+        levelManager = GetComponent<LevelManager>();
+    }
+    
+    private void OnEnable()
+    {
+        grid = new Block[gridX, gridY];
         InitializeGrid();
     }
 
@@ -75,6 +76,19 @@ public class GridManager : MonoBehaviour
                 block.transform.SetParent(gridSpawnPoint);
                 // Change block color
                 block.GetComponent<Block>().Initialize(levelManager.level.gridLayout[x + y * gridX]);
+            }
+        }
+    }
+
+    // Iterate through bottom row and check for missing blocks
+    private void CheckForMissingBlock()
+    {
+        // TODO: THIS SHOULD ONLY BE CALLED WHEN DESTROYING A BLOCK?
+        for (int i = 0; i < gridX; i++)
+        {
+            if (grid[i, 0] == null)
+            {   
+                DropDownColumn(i);
             }
         }
     }
@@ -122,18 +136,5 @@ public class GridManager : MonoBehaviour
             yield return null;
         }
         block.transform.position = targetPosition;
-    }
-
-    // Iterate through bottom row and check for missing blocks
-    private void CheckForMissingBlock()
-    {
-        // TODO: THIS SHOULD ONLY BE CALLED WHEN DESTROYING A BLOCK?
-        for (int i = 0; i < gridX; i++)
-        {
-            if (grid[i, 0] == null)
-            {   
-                DropDownColumn(i);
-            }
-        }
     }
 }

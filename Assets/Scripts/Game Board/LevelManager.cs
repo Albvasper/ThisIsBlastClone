@@ -2,21 +2,33 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+// TODO: Remove win and lose condition form here!
 /// <summary>
-/// Tracks player progress through a level and checks win/lose condition
+/// Sets up level, tracks player progress through a level and checks win/lose condition
 /// </summary>
 public class LevelManager : MonoBehaviour
 {
+    [Header("Level Properties")]
     public Level level;
+    [Range(1, 5)] [SerializeField] private int numberOfDockSlots;
+    [Range(1, 5)] [SerializeField] private int numberOfInventoryCols;
+
+    [Header("Components")]
+    [SerializeField] private Dock dock;
+    [SerializeField] private Inventory inventory;
+    // TODO: MOVE THIS TO UI MANAGER!
     [SerializeField] private Image progressBar;
+
+    private UIManager uiManager;
     private float progress = 0f;
     private float maxProgress;
-    private UIManager uiManager;
 
     private void Awake()
     {
         uiManager = GetComponent<UIManager>();
         progressBar.fillAmount = progress;
+        dock.Initialize(numberOfDockSlots);
+        inventory.Initialize(numberOfInventoryCols);
     }
 
     private void Start()
