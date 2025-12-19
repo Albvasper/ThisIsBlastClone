@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System.Threading;
 
 public enum BlockColor
 {
@@ -52,19 +51,21 @@ public class Block : MonoBehaviour
         StartCoroutine(DeathAnimation());
     }
 
-
     private IEnumerator DeathAnimation()
     {
-        Vector3 startingScale = transform.localScale;
-        Vector3 finalScale = Vector3.zero;
         const float duration = 0.1f;
         float counter = 0;
+        Vector3 startingScale = new(1.5f, 1.5f, 1.5f);
+        Vector3 finalScale = Vector3.zero;
+        Quaternion startingRotation = transform.rotation;
+        Quaternion finalRotation = transform.rotation * Quaternion.Euler(0, 0, 15f);
         
         while(counter < duration)
         {
             counter += Time.deltaTime;
             transform.localScale = Vector3.Lerp(startingScale, finalScale, counter/duration);
-            yield return null;            
+            transform.rotation = Quaternion.Slerp(startingRotation, finalRotation, counter/duration);
+            yield return null;
         }
         Destroy(gameObject);
     }

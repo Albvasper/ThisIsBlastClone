@@ -1,6 +1,8 @@
 using UnityEngine;
-using System.Collections;
 
+/// <summary>
+/// Singleton that arrages blocks on the grid and checks if blocks are missing to drop down columns.
+/// </summary>
 public class GridManager : MonoBehaviour
 {
     public static GridManager Instance { get; private set; }

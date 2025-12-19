@@ -15,6 +15,7 @@ public class ShooterBlock : Block
     [Header("Components")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private TextMeshProUGUI ammoCounter;
+    [SerializeField] private LevelManager levelManager;
 
     private int ammo = 0;
 
@@ -22,11 +23,6 @@ public class ShooterBlock : Block
     {
         base.Awake();
         OnDock = false;
-    }
-
-    private void OnEnable()
-    {
-        // Count how many blocks of the same color are in the grid and add the same number of bullets
     }
 
     private void Start()
@@ -79,10 +75,12 @@ public class ShooterBlock : Block
             // Spawn bullet
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             Bullet bulletComponent =  bullet.GetComponent<Bullet>();
-            // Aim at block
+            // Aim at block and shoot
             Vector3 direction = targetBlock.transform.position - transform.position;
             bulletComponent.Rb.AddForce(direction.normalized * firingForce, ForceMode.Impulse);
+            // Register progress on level
             targetBlock.Kill();
+            levelManager.MakeProgress();
         }
     }
 }
