@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// Singleton that arrages blocks on the grid and checks if blocks are missing to drop down columns.
@@ -76,36 +77,57 @@ public class GridManager : MonoBehaviour
     
     private void DropDownColumn(int x)
     {
+        int targetRow = 0;
         for (int currentRow = 0; currentRow < gridY; currentRow++)
         {
             Block block = grid[x, currentRow];
-            if (block != null)
+            if (block == null)
+            continue;
+
+            if (currentRow != targetRow)
             {
                 // Update 2D array
-                grid[x, currentRow - 1] = block;
+                grid[x, targetRow] = block;
                 grid[x, currentRow] = null;
                 // Update game world
-                MoveBlockToNewCell(block, x, currentRow - 1);
+                MoveBlockToNewCell(block, x, targetRow);
             }
+            targetRow++;
         }
     }
 
+    // Assign new position to block and start movement
     private void MoveBlockToNewCell(Block block, int x, int y)
     {
         Vector3 newPos = new(x, y, GridPosZ);
-        // TODO: Apply lerp to block movement
-        block.transform.position = newPos;
+        float moveDuration = 0.15f;
+        StartCoroutine(LerpBlock(block, newPos, moveDuration));
     }
 
+    // Move block slowly to new position
+    private IEnumerator LerpBlock(Block block, Vector3 targetPosition, float duration)
+    {
+        Vector3 startPosition = block.transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float time = elapsed / duration;
+            block.transform.position = Vector3.Lerp(startPosition, targetPosition, time);
+            yield return null;
+        }
+        block.transform.position = targetPosition;
+    }
+
+    // Iterate through bottom row and check for missing blocks
     private void CheckForMissingBlock()
     {
         // TODO: THIS SHOULD ONLY BE CALLED WHEN DESTROYING A BLOCK?
         for (int i = 0; i < gridX; i++)
         {
-            // Check if any of the bottom row blocks is missing
             if (grid[i, 0] == null)
             {   
-                // if a bottom block is missing drop the whole column one
                 DropDownColumn(i);
             }
         }

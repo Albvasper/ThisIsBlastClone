@@ -51,18 +51,35 @@ public class Block : MonoBehaviour
         StartCoroutine(DeathAnimation());
     }
 
+    // Make block big at first then scale it down overtime while rotating it
     private IEnumerator DeathAnimation()
     {
-        const float duration = 0.1f;
+        const float duration = 0.35f;
         float counter = 0;
-        Vector3 startingScale = new(1.5f, 1.5f, 1.5f);
+        float impactOffset = 0.1f;
+        float impactScale = 1.5f;
+        float impactRotation = 10f;
+
+        Vector3 startingPosition = transform.localPosition;
+        Vector3 finalPosition = new(
+                                        transform.localPosition.x + Random.Range(-impactOffset, impactOffset), 
+                                        transform.localPosition.y + Random.Range(-impactOffset, impactOffset),
+                                        transform.localPosition.z
+                                    );
+        Vector3 startingScale = new(impactScale, impactScale, impactScale);
         Vector3 finalScale = Vector3.zero;
         Quaternion startingRotation = transform.rotation;
-        Quaternion finalRotation = transform.rotation * Quaternion.Euler(0, 0, 15f);
+        Quaternion finalRotation = transform.rotation * 
+                                    Quaternion.Euler(
+                                                        0, 
+                                                        0,  
+                                                        Random.Range(-impactRotation, impactRotation)
+                                                    );
         
         while(counter < duration)
         {
             counter += Time.deltaTime;
+            transform.localPosition = Vector3.Lerp(startingPosition, finalPosition, counter/duration);
             transform.localScale = Vector3.Lerp(startingScale, finalScale, counter/duration);
             transform.rotation = Quaternion.Slerp(startingRotation, finalRotation, counter/duration);
             yield return null;
