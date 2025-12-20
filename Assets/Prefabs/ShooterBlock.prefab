@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6308995394502478048}
   - component: {fileID: 5646625861350793402}
   - component: {fileID: 7106615264746484245}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Ammo Cunter Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 802265487697214693}
   - component: {fileID: 7012293063151033673}
   - component: {fileID: 8715840413182124290}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 3790718504531597439}
   - component: {fileID: 5953186005662394136}
   - component: {fileID: 1410540004299576388}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: ShooterBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -366,3 +366,4 @@ MonoBehaviour:
   firingForce: 50
   bulletPrefab: {fileID: 2905360556005351038, guid: bedd608f04b53e244997f4161e6ecd7c, type: 3}
   ammoCounter: {fileID: 7106615264746484245}
+  levelManager: {fileID: 0}

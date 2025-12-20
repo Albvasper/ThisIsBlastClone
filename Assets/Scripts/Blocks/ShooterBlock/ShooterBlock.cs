@@ -7,7 +7,6 @@ using System.Collections;
 /// </summary>
 public class ShooterBlock : Block
 {
-    [Header("Properties")]
     public bool OnDock;
     [Range(0f, 1f) ][SerializeField] private float firingRate = 0.3f;
     [Range(0f, 100f) ][SerializeField] private float firingForce = 50f;
@@ -66,6 +65,11 @@ public class ShooterBlock : Block
         }
     }
 
+    public override void Die()
+    {
+        Destroy(gameObject);
+    }
+
     private void ShootAt(Block targetBlock)
     {
         if (targetBlock != null)
@@ -79,7 +83,7 @@ public class ShooterBlock : Block
             Vector3 direction = targetBlock.transform.position - transform.position;
             bulletComponent.Rb.AddForce(direction.normalized * firingForce, ForceMode.Impulse);
             // Register progress on level
-            targetBlock.Kill();
+            targetBlock.Die();
             levelManager.MakeProgress();
         }
     }

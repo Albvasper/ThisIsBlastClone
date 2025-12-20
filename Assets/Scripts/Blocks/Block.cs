@@ -15,6 +15,7 @@ public enum BlockColor
 
 public class Block : MonoBehaviour
 {
+    [Header("Properties")]
     public BlockColor Color;
     private MeshRenderer meshRenderer;
     
@@ -46,13 +47,13 @@ public class Block : MonoBehaviour
     /// <summary>
     /// Handles destruction of the block
     /// </summary>
-    public void Kill()
+    public virtual void Die()
     {
         StartCoroutine(DeathAnimation());
     }
 
     // Make block big at first then scale it down overtime while rotating it
-    private IEnumerator DeathAnimation()
+    protected IEnumerator DeathAnimation()
     {
         const float duration = 0.35f;
         float counter = 0;
@@ -62,19 +63,14 @@ public class Block : MonoBehaviour
 
         Vector3 startingPosition = transform.localPosition;
         Vector3 finalPosition = new(
-                                        transform.localPosition.x + Random.Range(-impactOffset, impactOffset), 
-                                        transform.localPosition.y + Random.Range(-impactOffset, impactOffset),
-                                        transform.localPosition.z
-                                    );
+            transform.localPosition.x + Random.Range(-impactOffset, impactOffset), 
+            transform.localPosition.y + Random.Range(-impactOffset, impactOffset),
+            transform.localPosition.z );
         Vector3 startingScale = new(impactScale, impactScale, impactScale);
         Vector3 finalScale = Vector3.zero;
         Quaternion startingRotation = transform.rotation;
         Quaternion finalRotation = transform.rotation * 
-                                    Quaternion.Euler(
-                                                        0, 
-                                                        0,  
-                                                        Random.Range(-impactRotation, impactRotation)
-                                                    );
+            Quaternion.Euler( 0, 0, Random.Range(-impactRotation, impactRotation));
         
         while(counter < duration)
         {

@@ -11,9 +11,9 @@ public class Inventory : MonoBehaviour
     [SerializeField] private float blockSpacing = 1.2f;
     [SerializeField] private Dock dock;
 
-    private List<ShooterBlock> availableShooterBlocks = new();
     private int gridX;
     private int gridY;
+    private List<ShooterBlock> availableShooterBlocks = new();
 
     private void Awake()
     {
@@ -89,6 +89,7 @@ public class Inventory : MonoBehaviour
                 MoveShooterToNewCell(block, x, y);
             }
         }
+        MakeTopLayerClickable();
     }
 
     // Remove shooter block from inventory
@@ -101,6 +102,7 @@ public class Inventory : MonoBehaviour
                 if (grid[x, y] == block)
                 {
                     MoveColumnUp(x, y);
+                    MakeTopLayerClickable();
                     return;
                 }
             }
@@ -121,7 +123,7 @@ public class Inventory : MonoBehaviour
         grid[column, gridY - 1] = null;
         ArrangeGrid();
     }
-
+    
     // Assign new position to shooter block
     private void MoveShooterToNewCell(ShooterBlock shooter, int x, int y)
     {
@@ -152,5 +154,17 @@ public class Inventory : MonoBehaviour
             yield return null;
         }
         block.transform.position = targetPosition;
+    }
+    
+    private void MakeTopLayerClickable()
+    {
+        int clickableLayer = LayerMask.NameToLayer("ClickableShooter");
+        for (int x = 0; x < gridX; x++)
+        {
+            ShooterBlock block = grid[x, 0];
+            if (block == null) 
+                continue;
+            block.gameObject.layer = clickableLayer;
+        }
     }
 }
