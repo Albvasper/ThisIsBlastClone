@@ -46,14 +46,12 @@ public class Inventory : MonoBehaviour
         DockSpace freeDockSpace = dock.CheckForFreeSpace();
         // If there free spaces on the dock, deploy the shooter block
         if (freeDockSpace != null && !shooterBlock.OnDock)
-        {
+        {   
             // Move shooter to dock
-            freeDockSpace.ShooterBlock = shooterBlock;
-            shooterBlock.transform.position = freeDockSpace.transform.position;
+            freeDockSpace.AssignShooterBlock(shooterBlock);
             RemoveFromShooterFromInventory(shooterBlock);
-            // Try to activate shooter
-            shooterBlock.OnDock = true;
-            shooterBlock.ReadyToShoot();
+            // Check for merges
+            dock.CheckForShooterMerges();
         }
     }
 

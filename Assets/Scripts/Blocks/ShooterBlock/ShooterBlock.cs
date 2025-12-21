@@ -8,6 +8,8 @@ using System.Collections;
 public class ShooterBlock : Block
 {
     public bool OnDock;
+    public int Ammo { get; private set; } = 0;
+
     [Range(0f, 1f) ][SerializeField] private float firingRate = 0.3f;
     [Range(0f, 100f) ][SerializeField] private float firingForce = 50f;
 
@@ -15,8 +17,6 @@ public class ShooterBlock : Block
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private TextMeshProUGUI ammoCounter;
     [SerializeField] private LevelManager levelManager;
-
-    private int ammo = 0;
 
     protected override void Awake()
     {
@@ -30,9 +30,9 @@ public class ShooterBlock : Block
         foreach (Block block in GridManager.Instance.grid)
         {
             if (block.Color == Color)
-                ammo++;
+                Ammo++;
         }
-        ammoCounter.text = ammo.ToString();
+        ammoCounter.text = Ammo.ToString();
     }
 
     /// <summary>
@@ -64,9 +64,35 @@ public class ShooterBlock : Block
             }
         }
     }
-
-    public override void Die()
+    
+    public void Upgrade(int extraAmmoCount)
     {
+        Ammo += extraAmmoCount;
+    }
+
+    public void StopShooting()
+    {
+        StopAllCoroutines();
+    }
+    
+    public void Die(int direction)
+    {
+        StartCoroutine(DeathAnimation(direction));
+    }
+    
+    // Moves the block outside of the camera view and then destroys it.
+    protected virtual IEnumerator DeathAnimation(int direction)
+    {
+        float duration = 2.5f;
+        float elapsed = 0f;
+        float velocity = 0.1f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            transform.position += new Vector3 (velocity, 0, 0) * direction;
+            yield return null;
+        }
         Destroy(gameObject);
     }
 
@@ -74,8 +100,8 @@ public class ShooterBlock : Block
     {
         if (targetBlock != null)
         {
-            ammo--;
-            ammoCounter.text = ammo.ToString();
+            Ammo--;
+            ammoCounter.text = Ammo.ToString();
             // Spawn bullet
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             Bullet bulletComponent =  bullet.GetComponent<Bullet>();

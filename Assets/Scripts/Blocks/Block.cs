@@ -10,7 +10,8 @@ public enum BlockColor
     Orange,
     Pink,
     Cyan,
-    Purple
+    Purple,
+    None
 }
 
 public class Block : MonoBehaviour
@@ -40,6 +41,7 @@ public class Block : MonoBehaviour
             case BlockColor.Pink: meshRenderer.material = GridManager.Instance.Pink; break;
             case BlockColor.Cyan: meshRenderer.material = GridManager.Instance.Cyan; break;
             case BlockColor.Purple: meshRenderer.material = GridManager.Instance.Purple; break;
+            case BlockColor.None: Debug.LogWarning("No material assigned!"); break;
         }
         Color = color;
     }
@@ -47,13 +49,13 @@ public class Block : MonoBehaviour
     /// <summary>
     /// Handles destruction of the block
     /// </summary>
-    public virtual void Die()
+    public void Die()
     {
         StartCoroutine(DeathAnimation());
     }
 
     // Make block big at first then scale it down overtime while rotating it
-    protected IEnumerator DeathAnimation()
+    protected virtual IEnumerator DeathAnimation()
     {
         const float duration = 0.35f;
         float counter = 0;
