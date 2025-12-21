@@ -192,6 +192,10 @@ PrefabInstance:
       propertyPath: levelManager
       value: 
       objectReference: {fileID: 1473141412}
+    - target: {fileID: 1410540004299576388, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
+      propertyPath: supriseShooter
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6418633133508761127, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1016,6 +1020,10 @@ PrefabInstance:
       propertyPath: levelManager
       value: 
       objectReference: {fileID: 1473141412}
+    - target: {fileID: 1410540004299576388, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
+      propertyPath: supriseShooter
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6418633133508761127, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1815,6 +1823,10 @@ PrefabInstance:
       propertyPath: levelManager
       value: 
       objectReference: {fileID: 1473141412}
+    - target: {fileID: 1410540004299576388, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
+      propertyPath: supriseShooter
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6418633133508761127, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1897,6 +1909,10 @@ PrefabInstance:
       propertyPath: levelManager
       value: 
       objectReference: {fileID: 1473141412}
+    - target: {fileID: 1410540004299576388, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
+      propertyPath: supriseShooter
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6418633133508761127, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2530,6 +2546,7 @@ MonoBehaviour:
   numberOfInventoryCols: 3
   dock: {fileID: 93354941}
   inventory: {fileID: 1357845416}
+  gridManager: {fileID: 0}
   progressBar: {fileID: 535973021}
 --- !u!114 &1473141413
 MonoBehaviour:
@@ -2570,6 +2587,7 @@ MonoBehaviour:
   Pink: {fileID: 2100000, guid: 4df7f787ef680d74594b641edeffe1dc, type: 2}
   Cyan: {fileID: 2100000, guid: 51b7c9d96565b6e4f831da37f70c6617, type: 2}
   Purple: {fileID: 2100000, guid: e51b8f6055b55054fbdd2de21319266a, type: 2}
+  Surprise: {fileID: 2100000, guid: 0331d8c3fcaf25e4fa6c613cddefb833, type: 2}
 --- !u!1 &1515055483
 GameObject:
   m_ObjectHideFlags: 0
@@ -3203,6 +3221,10 @@ PrefabInstance:
       propertyPath: levelManager
       value: 
       objectReference: {fileID: 1473141412}
+    - target: {fileID: 1410540004299576388, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
+      propertyPath: supriseShooter
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6418633133508761127, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -3355,6 +3377,10 @@ PrefabInstance:
       propertyPath: levelManager
       value: 
       objectReference: {fileID: 1473141412}
+    - target: {fileID: 1410540004299576388, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
+      propertyPath: supriseShooter
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6418633133508761127, guid: a57c5ca8038000948a90e3c3c79160e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

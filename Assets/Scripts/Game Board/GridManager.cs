@@ -28,9 +28,8 @@ public class GridManager : MonoBehaviour
     public Material Pink;
     public Material Cyan;
     public Material Purple;
+    public Material Surprise;
     
-    private LevelManager levelManager;
-
     private void Awake()
     {
         // Singleton
@@ -42,13 +41,34 @@ public class GridManager : MonoBehaviour
         {
             Instance = this;
         }
-        levelManager = GetComponent<LevelManager>();
     }
     
-    private void OnEnable()
+    /// <summary>
+    /// Read the level layout and place block accordingly. 
+    /// </summary>
+    /// <param name="level">Level scriptable object</param>
+    public void InitializeGrid(Level level)
     {
         grid = new Block[gridX, gridY,gridZ];
-        InitializeGrid();
+
+        for (int z = 0; z < gridZ; z++)
+        {
+            for (int y = 0; y < gridY; y++)
+            {
+                for (int x = 0; x < gridX; x++)
+                {
+                    // Spawn block on grid
+                    Vector3 blockPos = new(x, y, GridPosZ + z);
+                    GameObject block = Instantiate (blockPrefab, blockPos, Quaternion.identity, gridSpawnPoint);
+                    Block blockComponent = block.GetComponent<Block>();
+                    // Add it to the block matrix
+                    grid[x,y,z] = blockComponent;
+                    // Change block color
+                    int index = x + y * gridX + z * gridX * gridY;
+                    blockComponent.AssignMaterial(level.gridLayout[index]);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -68,29 +88,6 @@ public class GridManager : MonoBehaviour
                         grid[x, y, z] = null;
                         StartCoroutine(DropDownColumn(x, z));
                     }
-                }
-            }
-        }
-    }
-
-    // Place blocks on the alrady determined grid size
-    private void InitializeGrid()
-    {
-        for (int z = 0; z < gridZ; z++)
-        {
-            for (int y = 0; y < gridY; y++)
-            {
-                for (int x = 0; x < gridX; x++)
-                {
-                    // Spawn block on grid
-                    Vector3 blockPos = new(x, y, GridPosZ + z);
-                    GameObject block = Instantiate (blockPrefab, blockPos, Quaternion.identity, gridSpawnPoint);
-                    Block blockComponent = block.GetComponent<Block>();
-                    // Add it to the block matrix
-                    grid[x,y,z] = blockComponent;
-                    // Change block color
-                    int index = x + y * gridX + z * gridX * gridY;
-                    block.GetComponent<Block>().Initialize(levelManager.level.gridLayout[index]);
                 }
             }
         }

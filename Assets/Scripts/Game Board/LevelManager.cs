@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 // TODO: Remove win and lose condition form here!
 /// <summary>
-/// Sets up level, tracks player progress through a level and checks win/lose condition
+/// Sets up level and tracks player progress through a level.
 /// </summary>
 public class LevelManager : MonoBehaviour
 {
@@ -16,6 +16,7 @@ public class LevelManager : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Dock dock;
     [SerializeField] private Inventory inventory;
+    [SerializeField] private GridManager gridManager;
     // TODO: MOVE THIS TO UI MANAGER!
     [SerializeField] private Image progressBar;
 
@@ -25,14 +26,17 @@ public class LevelManager : MonoBehaviour
 
     private void Awake()
     {
+        gridManager = GetComponent<GridManager>();
         uiManager = GetComponent<UIManager>();
         progressBar.fillAmount = progress;
-        dock.Initialize(numberOfDockSlots);
-        inventory.Initialize(numberOfInventoryCols);
+
     }
 
     private void Start()
     {
+        gridManager.InitializeGrid(level);
+        inventory.Initialize(numberOfInventoryCols);
+        dock.Initialize(numberOfDockSlots);
         maxProgress = GridManager.Instance.grid.Length;
     }
 

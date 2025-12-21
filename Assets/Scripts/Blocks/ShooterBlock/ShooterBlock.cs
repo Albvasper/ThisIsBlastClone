@@ -7,6 +7,7 @@ using System.Collections;
 /// </summary>
 public class ShooterBlock : Block
 {
+    public bool supriseShooter;
     public bool OnDock;
     public int Ammo { get; private set; } = 0;
 
@@ -29,7 +30,10 @@ public class ShooterBlock : Block
 
     private void Start()
     {
-        Initialize(Color);
+        if (supriseShooter)
+            meshRenderer.material = GridManager.Instance.Surprise;
+        else
+            AssignMaterial(Color);
     }
 
     public void AssignAmmo(int ammo)

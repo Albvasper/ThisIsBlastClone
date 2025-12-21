@@ -18,7 +18,7 @@ public class Block : MonoBehaviour
 {
     [Header("Properties")]
     public BlockColor Color;
-    private MeshRenderer meshRenderer;
+    protected MeshRenderer meshRenderer;
     
     protected virtual void Awake()
     {
@@ -29,7 +29,7 @@ public class Block : MonoBehaviour
     /// Assign a color and material to the block.
     /// </summary>
     /// <param name="color">Color that will be assigned.</param>
-    public void Initialize(BlockColor color)
+    public void AssignMaterial(BlockColor color)
     {
         switch (color)
         {

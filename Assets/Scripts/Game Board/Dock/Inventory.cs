@@ -24,10 +24,6 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        StackShootersAmmo();
-    }
     /// <summary>
     /// Sets the size of the inventory grid.
     /// </summary>
@@ -39,6 +35,7 @@ public class Inventory : MonoBehaviour
         grid = new ShooterBlock[gridX, gridY];
         FillArray();
         ArrangeGrid();
+        StackShootersAmmo();
     }
 
     /// <summary>
@@ -228,10 +225,11 @@ public class Inventory : MonoBehaviour
         int clickableLayer = LayerMask.NameToLayer("ClickableShooter");
         for (int x = 0; x < gridX; x++)
         {
-            ShooterBlock block = grid[x, 0];
-            if (block == null) 
+            ShooterBlock shooter = grid[x, 0];
+            if (shooter == null) 
                 continue;
-            block.gameObject.layer = clickableLayer;
+            shooter.gameObject.layer = clickableLayer;
+            shooter.AssignMaterial(shooter.Color);
         }
     }
 }
