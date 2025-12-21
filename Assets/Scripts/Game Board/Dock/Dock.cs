@@ -101,15 +101,14 @@ public class Dock : MonoBehaviour
         // Remove side shooters
         foreach (int i in indices)
         {
+            Spaces[i].ShooterBlock.StopShooting();
             if (i == centerIndex) 
                 continue;
-            Spaces[i].ShooterBlock.StopShooting();
             extraAmmo += Spaces[i].ShooterBlock.Ammo;
             StartCoroutine(MergeShooterAnimation(i, Spaces[centerIndex].ShooterBlock));
         }
         // Upgrade mmiddle shooter block
         ShooterBlock mergedShooter = Spaces[centerIndex].ShooterBlock;
-        Debug.Log("UPGRADING!");
         mergedShooter.Upgrade(extraAmmo);
     }
 
@@ -129,5 +128,6 @@ public class Dock : MonoBehaviour
         }
         // Destroy shooter block once merged
         Destroy(Spaces[mergingBlockIndex].ShooterBlock.gameObject);
+        shooterBlock.ReadyToShoot();
     }
 }

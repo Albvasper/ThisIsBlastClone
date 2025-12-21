@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -362,7 +362,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Color: 0
   OnDock: 0
-  firingRate: 0.15
+  firingRate: 0.1
   firingForce: 30
   bulletPrefab: {fileID: 2905360556005351038, guid: bedd608f04b53e244997f4161e6ecd7c, type: 3}
   ammoCounter: {fileID: 7106615264746484245}

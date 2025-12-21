@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 /// <summary>
 /// Singleton that arrages blocks on the grid and checks if blocks are missing to drop down columns.
@@ -56,9 +55,22 @@ public class GridManager : MonoBehaviour
     /// Deletes a block on the grid waiting one frame
     /// </summary>
     /// <param name="block">Block that will be removed</param>
-    public void RemoveBlockDelayed(Block block, float delay)
+    public void RemoveBlock(Block block)
     {
-        StartCoroutine(RemoveBlock(block, delay));
+        for (int x = 0; x < gridX; x++)
+        {
+            for (int y = 0; y < gridY; y++)
+            {
+                for (int z = 0; z < gridZ; z++)
+                {
+                    if (grid[x, y, z] == block)
+                    {
+                        grid[x, y, z] = null;
+                        StartCoroutine(DropDownColumn(x, z));
+                    }
+                }
+            }
+        }
     }
 
     // Place blocks on the alrady determined grid size
@@ -84,31 +96,12 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    private IEnumerator RemoveBlock(Block block, float delay)
+    private IEnumerator DropDownColumn(int x, int z)
     {
-        yield return new WaitForSeconds(delay);
-
-        for (int x = 0; x < gridX; x++)
-        {
-            for (int y = 0; y < gridY; y++)
-            {
-                for (int z = 0; z < gridZ; z++)
-                {
-                    if (grid[x, y, z] == block)
-                    {
-                        grid[x, y, z] = null;
-                        DropDownColumn(x, z);
-                        yield return null;
-                    }
-                }
-            }
-        }
-    }
-
-    private void DropDownColumn(int x, int z)
-    {
+        const float Delay = 0.35f;
         int targetY = 0;
 
+        yield return new WaitForSeconds(Delay);
         for (int y = 0; y < gridY; y++)
         {
             Block block = grid[x, y, z];

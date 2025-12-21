@@ -24,6 +24,10 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        StackShootersAmmo();
+    }
     /// <summary>
     /// Sets the size of the inventory grid.
     /// </summary>
@@ -88,6 +92,71 @@ public class Inventory : MonoBehaviour
             }
         }
         MakeTopLayerClickable();
+    }
+
+    private void StackShootersAmmo()
+    {
+        Dictionary<BlockColor, int> colorsOnGrid = CountBlocksByColor();
+        Dictionary<BlockColor, List<ShooterBlock>> shootersByColor = GroupShootersByColor();
+
+        // Distribute ammo evenly among shooters of the same color
+        DistributeAmmo(colorsOnGrid, shootersByColor);
+    }
+
+    private Dictionary<BlockColor, int> CountBlocksByColor()
+    {
+        Dictionary<BlockColor, int> colorsOnGrid = new();
+
+        foreach (Block block in GridManager.Instance.grid)
+        {
+            if (block == null) continue;
+
+            if (!colorsOnGrid.ContainsKey(block.Color))
+                colorsOnGrid[block.Color] = 0;
+
+            colorsOnGrid[block.Color]++;
+        }
+        return colorsOnGrid;
+    }
+
+    private Dictionary<BlockColor, List<ShooterBlock>> GroupShootersByColor()
+    {
+        Dictionary<BlockColor, List<ShooterBlock>> shootersByColor = new();
+
+        foreach (ShooterBlock shooter in availableShooterBlocks)
+        {
+            if (shooter == null) continue;
+
+            if (!shootersByColor.ContainsKey(shooter.Color))
+                shootersByColor[shooter.Color] = new List<ShooterBlock>();
+
+            shootersByColor[shooter.Color].Add(shooter);
+        }
+        return shootersByColor;
+    }
+    
+    private void DistributeAmmo(
+        Dictionary<BlockColor, int> colorsOnGrid, 
+        Dictionary<BlockColor, List<ShooterBlock>> shootersByColor)
+    {
+        foreach (var kvp in shootersByColor)
+        {
+            BlockColor color = kvp.Key;
+            List<ShooterBlock> shooters = kvp.Value;
+
+            if (!colorsOnGrid.ContainsKey(color)) 
+                continue;
+
+            int totalAmmo = colorsOnGrid[color];
+            int ammoPerShooter = totalAmmo / shooters.Count;
+            int remainder = totalAmmo % shooters.Count;
+
+            for (int i = 0; i < shooters.Count; i++)
+            {
+                int ammoToGive = ammoPerShooter + (i < remainder ? 1 : 0);
+                shooters[i].AssignAmmo(ammoToGive);
+            }
+        }
     }
 
     // Remove shooter block from inventory

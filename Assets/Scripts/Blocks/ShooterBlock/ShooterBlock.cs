@@ -30,13 +30,11 @@ public class ShooterBlock : Block
     private void Start()
     {
         Initialize(Color);
-        // TODO: Move logic to inventory to assign correct ammo
-        // foreach (Block block in GridManager.Instance.grid)
-        // {
-        //     if (block.Color == Color)
-        //         Ammo++;
-        // }
-        Ammo = 1000;
+    }
+
+    public void AssignAmmo(int ammo)
+    {
+        Ammo = ammo;
         ammoCounter.text = Ammo.ToString();
     }
 
@@ -52,6 +50,7 @@ public class ShooterBlock : Block
     public void Upgrade(int extraAmmoCount)
     {
         Ammo += extraAmmoCount;
+        ammoCounter.text = Ammo.ToString();
     }
 
     public void StopShooting()
@@ -115,7 +114,6 @@ public class ShooterBlock : Block
 
     private void ShootAt(Block targetBlock)
     {
-        const float gravityUpdateDelay = 0.35f;
         if (targetBlock != null)
         {
             Ammo--;
@@ -127,7 +125,7 @@ public class ShooterBlock : Block
             Vector3 direction = targetBlock.transform.position - transform.position;
             bulletComponent.Rb.AddForce(direction.normalized * firingForce, ForceMode.Impulse);
             // Register progress on level
-            GridManager.Instance.RemoveBlockDelayed(targetBlock, gravityUpdateDelay);
+            GridManager.Instance.RemoveBlock(targetBlock);
             targetBlock.Die();
             levelManager.MakeProgress();
         }
