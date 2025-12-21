@@ -17,6 +17,7 @@ public class GridManager : MonoBehaviour
 
     [Header("Components")]
     [SerializeField] private GameObject blockPrefab;
+    [SerializeField] private GameObject piggyBankPrefab;
     [SerializeField] private Transform gridSpawnPoint;
 
     [Header("Block Materials")]
@@ -30,6 +31,8 @@ public class GridManager : MonoBehaviour
     public Material Purple;
     public Material Surprise;
     
+    private LevelManager levelManager;
+
     private void Awake()
     {
         // Singleton
@@ -41,6 +44,8 @@ public class GridManager : MonoBehaviour
         {
             Instance = this;
         }
+        
+        levelManager = GetComponent<LevelManager>();
     }
     
     /// <summary>
@@ -57,15 +62,26 @@ public class GridManager : MonoBehaviour
             {
                 for (int x = 0; x < gridX; x++)
                 {
-                    // Spawn block on grid
-                    Vector3 blockPos = new(x, y, GridPosZ + z);
-                    GameObject block = Instantiate (blockPrefab, blockPos, Quaternion.identity, gridSpawnPoint);
-                    Block blockComponent = block.GetComponent<Block>();
-                    // Add it to the block matrix
-                    grid[x,y,z] = blockComponent;
-                    // Change block color
                     int index = x + y * gridX + z * gridX * gridY;
-                    blockComponent.AssignMaterial(level.gridLayout[index]);
+                    Vector3 blockPos = new(x, y, GridPosZ + z);
+                    Block block;
+                    // TODO: Extract methods!
+                    // Piggy bank
+                    if (level.gridLayout[index] == BlockColor.PiggyBank)
+                    {
+                        GameObject piggyBankGO = 
+                            Instantiate (piggyBankPrefab, blockPos, Quaternion.identity, gridSpawnPoint);
+                        block = piggyBankGO.GetComponent<PiggyBank>();
+                    } else
+                    {
+                        GameObject blockGO = 
+                            Instantiate (blockPrefab, blockPos, Quaternion.identity, gridSpawnPoint);
+                        block = blockGO.GetComponent<Block>();
+                        // Change block color
+                        block.AssignMaterial(level.gridLayout[index]);
+                    }
+                    // Add it to the block matrix
+                    grid[x,y,z] = block;
                 }
             }
         }
@@ -77,6 +93,8 @@ public class GridManager : MonoBehaviour
     /// <param name="block">Block that will be removed</param>
     public void RemoveBlock(Block block)
     {
+        levelManager.MakeProgress();
+
         for (int x = 0; x < gridX; x++)
         {
             for (int y = 0; y < gridY; y++)

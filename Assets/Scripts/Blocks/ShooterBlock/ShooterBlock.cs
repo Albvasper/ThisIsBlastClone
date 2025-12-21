@@ -3,7 +3,7 @@ using TMPro;
 using System.Collections;
 
 /// <summary>
-/// Block that once places on the dock it will shoot at blocks of the same color.
+/// Block that once places on the dock it will shoot at piggy banks or blocks of the same color.
 /// </summary>
 public class ShooterBlock : Block
 {
@@ -17,7 +17,6 @@ public class ShooterBlock : Block
     [Header("Components")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private TextMeshProUGUI ammoCounter;
-    [SerializeField] private LevelManager levelManager;
 
     private int currentTargetX = 0;
     private int currentTargetZ = 0;
@@ -83,19 +82,64 @@ public class ShooterBlock : Block
         Destroy(gameObject);
     }
 
+    // Search for target: Look for piggy banks, if there are none look for block that are the same color as the shooter
     private IEnumerator SearchForBlocks()
     {
         while (Ammo > 0)
         {
-            Block target = GridManager.Instance.grid[currentTargetX, 0, currentTargetZ];
-            if (target != null && target.Color == Color)
+            Block target = GetBlock();
+            
+            if (target == null)
             {
-                // Found target
-                ShootAt(target);
+                AimForNextBlock();
+                yield return new WaitForSeconds(firingRate);
+                continue;
             }
-            AimForNextBlock();
+
+            ShootAt(target);
+
+            if (!IsPiggyBank(target))
+            {
+                AimForNextBlock();
+            }
+
             yield return new WaitForSeconds(firingRate);
         }
+    }
+
+    // Gets the current block target giving priority to piggy banks.
+    private Block GetBlock()
+    {
+        Block piggyBank = ScanForPiggyBank();
+        if (piggyBank != null)
+            return piggyBank;
+
+        return GridManager.Instance.grid[currentTargetX, 0, currentTargetZ];
+    }
+
+    // Searchs for piggy banks and returns them if there are any
+    private Block ScanForPiggyBank()
+    {
+        for (int x = 0; x < GridManager.Instance.gridX; x++)
+        {
+            for (int z = 0; z < GridManager.Instance.gridZ; z++)
+            {
+                Block block = GridManager.Instance.grid[x, 0, z];
+                if (block != null && block.Color == BlockColor.PiggyBank)
+                {
+                    currentTargetX = x;
+                    currentTargetZ = z;
+                    return block;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Returns if the current block is a piggy bank or a normal block
+    private bool IsPiggyBank(Block block)
+    {
+        return block != null && block.Color == BlockColor.PiggyBank;
     }
 
     private void AimForNextBlock()
@@ -120,18 +164,19 @@ public class ShooterBlock : Block
     {
         if (targetBlock != null)
         {
-            Ammo--;
-            ammoCounter.text = Ammo.ToString();
+            if (targetBlock.Color != BlockColor.PiggyBank)
+            {
+                Ammo--;
+                ammoCounter.text = Ammo.ToString();
+            }
             // Spawn bullet
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             Bullet bulletComponent =  bullet.GetComponent<Bullet>();
             // Aim at block and shoot
             Vector3 direction = targetBlock.transform.position - transform.position;
             bulletComponent.Rb.AddForce(direction.normalized * firingForce, ForceMode.Impulse);
-            // Register progress on level
-            GridManager.Instance.RemoveBlock(targetBlock);
-            targetBlock.Die();
-            levelManager.MakeProgress();
+            // Deal damage to block
+            targetBlock.TakeDamage();
         }
     }
 }

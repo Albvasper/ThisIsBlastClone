@@ -11,6 +11,7 @@ public enum BlockColor
     Pink,
     Cyan,
     Purple,
+    PiggyBank,
     None
 }
 
@@ -18,11 +19,15 @@ public class Block : MonoBehaviour
 {
     [Header("Properties")]
     public BlockColor Color;
+
     protected MeshRenderer meshRenderer;
-    
+    protected int maxHealth = 1;
+    protected int currentHealth;
+
     protected virtual void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
+        currentHealth = maxHealth;
     }
 
     /// <summary>
@@ -41,6 +46,7 @@ public class Block : MonoBehaviour
             case BlockColor.Pink: meshRenderer.material = GridManager.Instance.Pink; break;
             case BlockColor.Cyan: meshRenderer.material = GridManager.Instance.Cyan; break;
             case BlockColor.Purple: meshRenderer.material = GridManager.Instance.Purple; break;
+            case BlockColor.PiggyBank: break;
             case BlockColor.None: Debug.LogWarning("No material assigned!"); break;
         }
         Color = color;
@@ -49,9 +55,14 @@ public class Block : MonoBehaviour
     /// <summary>
     /// Handles destruction of the block
     /// </summary>
-    public void Die()
+    public virtual void TakeDamage()
     {
-        StartCoroutine(DeathAnimation());
+        currentHealth--;
+        if (currentHealth <= 0)
+        {
+            GridManager.Instance.RemoveBlock(this);
+            StartCoroutine(DeathAnimation());
+        }
     }
 
     // Make block big at first then scale it down overtime while rotating it

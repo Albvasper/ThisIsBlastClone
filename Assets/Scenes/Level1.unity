@@ -2578,6 +2578,7 @@ MonoBehaviour:
   gridY: 12
   gridZ: 1
   blockPrefab: {fileID: 2794581734791300383, guid: d0c5618e5f6b52344b973e8265e79f39, type: 3}
+  piggyBankPrefab: {fileID: 2794581734791300383, guid: 3aa3d9ebc7f7f75498b78309d5277235, type: 3}
   gridSpawnPoint: {fileID: 1515055484}
   Red: {fileID: 2100000, guid: fdf875c4875389e4cbeaf33cf64d316c, type: 2}
   Yellow: {fileID: 2100000, guid: 55afd0623ad0f644da1273ab57168d7f, type: 2}
