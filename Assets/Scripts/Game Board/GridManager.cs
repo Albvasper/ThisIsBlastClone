@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// Singleton that arrages blocks on the grid and checks if blocks are missing to drop down columns.
@@ -8,11 +9,12 @@ public class GridManager : MonoBehaviour
 {
     public static GridManager Instance { get; private set; }
     private const int GridPosZ = 25;
-    public Block[,] grid { get; private set; }
+    public Block[,,] grid { get; private set; }
 
     [Header("Grid Settings")]
     [SerializeField] public int gridX = 10;
     [SerializeField] public int gridY = 12;
+    [SerializeField] public int gridZ = 2;
 
     [Header("Components")]
     [SerializeField] private GameObject blockPrefab;
@@ -46,80 +48,99 @@ public class GridManager : MonoBehaviour
     
     private void OnEnable()
     {
-        grid = new Block[gridX, gridY];
+        grid = new Block[gridX, gridY,gridZ];
         InitializeGrid();
     }
 
-    private void Update()
+    /// <summary>
+    /// Deletes a block on the grid waiting one frame
+    /// </summary>
+    /// <param name="block">Block that will be removed</param>
+    public void RemoveBlockDelayed(Block block, float delay)
     {
-        CheckForMissingBlock();
+        StartCoroutine(RemoveBlock(block, delay));
     }
 
     // Place blocks on the alrady determined grid size
     private void InitializeGrid()
     {
+        for (int z = 0; z < gridZ; z++)
+        {
+            for (int y = 0; y < gridY; y++)
+            {
+                for (int x = 0; x < gridX; x++)
+                {
+                    // Spawn block on grid
+                    Vector3 blockPos = new(x, y, GridPosZ + z);
+                    GameObject block = Instantiate (blockPrefab, blockPos, Quaternion.identity, gridSpawnPoint);
+                    Block blockComponent = block.GetComponent<Block>();
+                    // Add it to the block matrix
+                    grid[x,y,z] = blockComponent;
+                    // Change block color
+                    int index = x + y * gridX + z * gridX * gridY;
+                    block.GetComponent<Block>().Initialize(levelManager.level.gridLayout[index]);
+                }
+            }
+        }
+    }
+
+    private IEnumerator RemoveBlock(Block block, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        for (int x = 0; x < gridX; x++)
+        {
+            for (int y = 0; y < gridY; y++)
+            {
+                for (int z = 0; z < gridZ; z++)
+                {
+                    if (grid[x, y, z] == block)
+                    {
+                        grid[x, y, z] = null;
+                        DropDownColumn(x, z);
+                        yield return null;
+                    }
+                }
+            }
+        }
+    }
+
+    private void DropDownColumn(int x, int z)
+    {
+        int targetY = 0;
+
         for (int y = 0; y < gridY; y++)
         {
-            for (int x = 0; x < gridX; x++)
-            {
-                // Spawn block on grid
-                Vector2 blockPos = new(x, y);
-                GameObject block = Instantiate
-                (
-                    blockPrefab, 
-                    new Vector3(blockPos.x, blockPos.y, GridPosZ), 
-                    Quaternion.identity
-                );
-                Block blockComponent = block.GetComponent<Block>();
-                // Add it to the block matrix
-                grid[x,y] = blockComponent;
-                block.transform.SetParent(gridSpawnPoint);
-                // Change block color
-                block.GetComponent<Block>().Initialize(levelManager.level.gridLayout[x + y * gridX]);
-            }
-        }
-    }
-
-    // Iterate through bottom row and check for missing blocks
-    private void CheckForMissingBlock()
-    {
-        // TODO: THIS SHOULD ONLY BE CALLED WHEN DESTROYING A BLOCK?
-        for (int i = 0; i < gridX; i++)
-        {
-            if (grid[i, 0] == null)
-            {   
-                DropDownColumn(i);
-            }
-        }
-    }
-    
-    private void DropDownColumn(int x)
-    {
-        int targetRow = 0;
-        for (int currentRow = 0; currentRow < gridY; currentRow++)
-        {
-            Block block = grid[x, currentRow];
+            Block block = grid[x, y, z];
             if (block == null)
-            continue;
+                continue;
 
-            if (currentRow != targetRow)
+            if (y != targetY)
             {
-                // Update 2D array
-                grid[x, targetRow] = block;
-                grid[x, currentRow] = null;
-                // Update game world
-                MoveBlockToNewCell(block, x, targetRow);
+                grid[x, targetY, z] = block;
+                grid[x, y, z] = null;
+                MoveBlockToNewCell(block, x, targetY, z);
             }
-            targetRow++;
+            targetY++;
         }
     }
 
     // Assign new position to block and start movement
-    private void MoveBlockToNewCell(Block block, int x, int y)
+    private void MoveBlockToNewCell(Block block, int x, int y, int z)
     {
-        Vector3 newPos = new(x, y, GridPosZ);
+        Vector3 newPos = GridToWorld(x, y, z);
         float moveDuration = 0.15f;
         StartCoroutine(LerpBlock(block, newPos, moveDuration));
+    }
+
+    // Convert grid position to world position
+    private Vector3 GridToWorld(int x, int y, int z)
+    {
+        return new Vector3(
+            gridSpawnPoint.position.x + x,
+            gridSpawnPoint.position.y + y,
+            gridSpawnPoint.position.z + z
+        );
     }
 
     // Move block slowly to new position

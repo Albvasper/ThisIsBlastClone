@@ -18,6 +18,9 @@ public class ShooterBlock : Block
     [SerializeField] private TextMeshProUGUI ammoCounter;
     [SerializeField] private LevelManager levelManager;
 
+    private int currentTargetX = 0;
+    private int currentTargetZ = 0;
+
     protected override void Awake()
     {
         base.Awake();
@@ -27,11 +30,13 @@ public class ShooterBlock : Block
     private void Start()
     {
         Initialize(Color);
-        foreach (Block block in GridManager.Instance.grid)
-        {
-            if (block.Color == Color)
-                Ammo++;
-        }
+        // TODO: Move logic to inventory to assign correct ammo
+        // foreach (Block block in GridManager.Instance.grid)
+        // {
+        //     if (block.Color == Color)
+        //         Ammo++;
+        // }
+        Ammo = 1000;
         ammoCounter.text = Ammo.ToString();
     }
 
@@ -40,31 +45,10 @@ public class ShooterBlock : Block
     /// </summary>
     public void ReadyToShoot()
     {
-        StartCoroutine(SearchAndDestroyBlock());
+        StopAllCoroutines();
+        StartCoroutine(SearchForBlocks());
     }
 
-    /// <summary>
-    /// Iterates through the bottom row of the grid. If it finds a block that is the same color as the shooter, it
-    /// shoots at it and destroys that block. 
-    /// </summary>
-    /// <returns></returns>
-    public IEnumerator SearchAndDestroyBlock()
-    {
-        while(GridManager.Instance.grid.GetLength(0) > 0)
-        {
-            // Iterate through the bottom row
-            for (int i = 0; i < GridManager.Instance.gridX; i++)
-            {
-                // Compare colors
-                if (GridManager.Instance.grid[i, 0].Color == Color)
-                {   
-                    ShootAt(GridManager.Instance.grid[i, 0]);
-                    yield return new WaitForSeconds(firingRate);
-                }
-            }
-        }
-    }
-    
     public void Upgrade(int extraAmmoCount)
     {
         Ammo += extraAmmoCount;
@@ -96,8 +80,42 @@ public class ShooterBlock : Block
         Destroy(gameObject);
     }
 
+    private IEnumerator SearchForBlocks()
+    {
+        while (Ammo > 0)
+        {
+            Block target = GridManager.Instance.grid[currentTargetX, 0, currentTargetZ];
+            if (target != null && target.Color == Color)
+            {
+                // Found target
+                ShootAt(target);
+            }
+            AimForNextBlock();
+            yield return new WaitForSeconds(firingRate);
+        }
+    }
+
+    private void AimForNextBlock()
+    {
+        // Move on the Z axis first
+        currentTargetZ++;
+
+        if (currentTargetZ >= GridManager.Instance.gridZ)
+        {
+            currentTargetZ = 0;
+            currentTargetX++;
+        }
+
+        // Loop back to start when X exceeds grid width
+        if (currentTargetX >= GridManager.Instance.gridX)
+        {
+            currentTargetX = 0;
+        }
+    }
+
     private void ShootAt(Block targetBlock)
     {
+        const float gravityUpdateDelay = 0.35f;
         if (targetBlock != null)
         {
             Ammo--;
@@ -109,6 +127,7 @@ public class ShooterBlock : Block
             Vector3 direction = targetBlock.transform.position - transform.position;
             bulletComponent.Rb.AddForce(direction.normalized * firingForce, ForceMode.Impulse);
             // Register progress on level
+            GridManager.Instance.RemoveBlockDelayed(targetBlock, gravityUpdateDelay);
             targetBlock.Die();
             levelManager.MakeProgress();
         }

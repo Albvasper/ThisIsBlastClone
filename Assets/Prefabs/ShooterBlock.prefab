@@ -362,8 +362,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Color: 0
   OnDock: 0
-  firingRate: 0.1
-  firingForce: 50
+  firingRate: 0.15
+  firingForce: 30
   bulletPrefab: {fileID: 2905360556005351038, guid: bedd608f04b53e244997f4161e6ecd7c, type: 3}
   ammoCounter: {fileID: 7106615264746484245}
   levelManager: {fileID: 0}
