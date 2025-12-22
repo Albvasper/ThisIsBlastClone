@@ -1,8 +1,13 @@
 using UnityEngine;
+using System.Collections;
 
+/// <summary>
+/// Space that stores shooter blocks on the dock.
+/// </summary>
 public class DockSpace : MonoBehaviour
 {
     public ShooterBlock ShooterBlock;
+
     private Dock dock;
     private int index;
 
@@ -28,16 +33,33 @@ public class DockSpace : MonoBehaviour
     public void AssignShooterBlock(ShooterBlock shooterBlock)
     {
         // Move shooter to dock space
+        StartCoroutine(LerpShooterToDock(shooterBlock));
         ShooterBlock = shooterBlock;
         shooterBlock.OnDock = true;
-        shooterBlock.transform.position = transform.position;
-        shooterBlock.ReadyToShoot();
     }
 
 
     public void RemoveShooterBlock() {
         ShooterBlock.Die(CalculateShooterRemovalDirection());
         ShooterBlock = null;
+    }
+
+    private IEnumerator LerpShooterToDock(ShooterBlock shooterBlock)
+    {
+        const float Duration = 0.35f;
+        float counter = 0;
+        Vector3 startingPosition = shooterBlock.transform.position;
+        Vector3 finalPosition = transform.position;
+
+        while (counter < Duration)
+        {
+            counter += Time.deltaTime;
+            if (shooterBlock != null)
+                shooterBlock.transform.position = Vector3.Lerp(startingPosition, finalPosition, counter/Duration);
+            yield return null;
+        }
+        if (shooterBlock != null)
+            shooterBlock.ReadyToShoot();
     }
 
     private void CheckShooterBlockAmmo()

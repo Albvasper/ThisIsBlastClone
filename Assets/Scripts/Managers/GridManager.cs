@@ -65,8 +65,6 @@ public class GridManager : MonoBehaviour
                     int index = x + y * gridX + z * gridX * gridY;
                     Vector3 blockPos = new(x, y, GridPosZ + z);
                     Block block;
-                    // TODO: Extract methods!
-                    // Piggy bank
                     if (level.gridLayout[index] == BlockColor.PiggyBank)
                     {
                         GameObject piggyBankGO = 

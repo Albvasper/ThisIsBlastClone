@@ -1,5 +1,5 @@
-using Unity.VisualScripting;
 using UnityEngine;
+using Unity.VisualScripting;
 
 public class PlayerInput : MonoBehaviour
 {

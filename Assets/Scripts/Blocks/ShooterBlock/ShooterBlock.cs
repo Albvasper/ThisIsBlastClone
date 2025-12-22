@@ -14,6 +14,7 @@ public class ShooterBlock : Block
 
     [Range(0f, 1f) ][SerializeField] private float firingRate = 0.3f;
     [Range(0f, 100f) ][SerializeField] private float firingForce = 50f;
+    [SerializeField] private AudioClip shootingSFX;
 
     [Header("Components")]
     [SerializeField] private GameObject bulletPrefab;
@@ -22,7 +23,7 @@ public class ShooterBlock : Block
     private int currentTargetX = 0;
     private int currentTargetZ = 0;
     private float lastFireTime;
-    private const float IdleThreshold = 2f;
+    private const float IdleThreshold = 3f;
 
     protected override void Awake()
     {
@@ -82,14 +83,16 @@ public class ShooterBlock : Block
     // Moves the block outside of the camera view and then destroys it.
     protected virtual IEnumerator DeathAnimation(int direction)
     {
-        float duration = 2.5f;
+        const float Duration = 2.5f;
+        const float Velocity = 0.1f;
         float elapsed = 0f;
-        float velocity = 0.1f;
+        Quaternion startingRotation = transform.rotation;
 
-        while (elapsed < duration)
+        while (elapsed < Duration)
         {
             elapsed += Time.deltaTime;
-            transform.position += new Vector3 (velocity, 0, 0) * direction;
+            transform.position += new Vector3 (Velocity, 0, 0) * direction;
+            transform.rotation = Quaternion.Slerp(startingRotation, Quaternion.identity, elapsed/Duration);
             yield return null;
         }
         Destroy(gameObject);
@@ -105,11 +108,12 @@ public class ShooterBlock : Block
             if (target == null || !IsValidTarget(target))
             {
                 AimForNextBlock();
-                yield return new WaitForSeconds(firingRate);
+                //yield return new WaitForSeconds(firingRate);
                 continue;
             }
 
             ShootAt(target);
+            StartCoroutine(AimAtBlock(target));
 
             if (!IsPiggyBank(target))
             {
@@ -197,11 +201,32 @@ public class ShooterBlock : Block
             // Spawn bullet
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             Bullet bulletComponent =  bullet.GetComponent<Bullet>();
+            AudioManager.Instance.PlaySFX(shootingSFX);
             // Aim at block and shoot
             Vector3 direction = targetBlock.transform.position - transform.position;
             bulletComponent.Rb.AddForce(direction.normalized * firingForce, ForceMode.Impulse);
             // Deal damage to block
             targetBlock.TakeDamage();
+        }
+    }
+
+    private IEnumerator AimAtBlock(Block target)
+    {
+        const float RotationVelocity = 30f;
+        const int AngleOffset = 90;
+
+        while (target != null)
+        {
+            Vector3 dir = target.transform.position - transform.position;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            angle -= AngleOffset;
+            Quaternion targetRot = Quaternion.Euler(0f, 0f, angle);
+            transform.rotation = Quaternion.Lerp(
+                transform.rotation,
+                targetRot,
+                Time.deltaTime * RotationVelocity
+            );
+            yield return null; 
         }
     }
 }

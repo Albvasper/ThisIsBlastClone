@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5646625861350793402}
   - component: {fileID: 7106615264746484245}
   m_Layer: 0
-  m_Name: Ammo Cunter Text
+  m_Name: Ammo Counter Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0
+  m_text: 00
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -74,8 +74,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -92,8 +92,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 2.75
-  m_fontSizeBase: 2.75
+  m_fontSize: 2.5
+  m_fontSizeBase: 2.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -281,7 +281,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6921551393149506638}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: -2432090755550338912, guid: 503ccf2d80396a944b0db07319998711, type: 3}
 --- !u!23 &3790718504531597439
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -361,9 +361,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Color: 0
+  readyToDeploy: 0
+  supriseShooter: 0
   OnDock: 0
-  firingRate: 0.1
-  firingForce: 30
+  firingRate: 0.085
+  firingForce: 15
+  shootingSFX: {fileID: 8300000, guid: 466f50a27b867ab478111c3fe53fd2f9, type: 3}
   bulletPrefab: {fileID: 2905360556005351038, guid: bedd608f04b53e244997f4161e6ecd7c, type: 3}
   ammoCounter: {fileID: 7106615264746484245}
-  levelManager: {fileID: 0}

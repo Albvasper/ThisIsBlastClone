@@ -6,7 +6,6 @@ using System.Collections;
 /// </summary>
 public class PiggyBank : Block
 {
-
     protected override void Awake()
     {
         maxHealth = 10;
@@ -22,7 +21,6 @@ public class PiggyBank : Block
     protected override IEnumerator DeathAnimation()
     {
         yield return null;
-        // TODO: Death animation
         Destroy(gameObject);
     }
 

@@ -2,10 +2,15 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// Board where shooter blocks are deployed and activated.
+/// </summary>
 public class Dock : MonoBehaviour
 {
-    [SerializeField] private GameObject dockSpacePrefab;
     public List<DockSpace> Spaces {get; private set; } = new();
+        
+    [SerializeField] private AudioClip mergeShootersSFX;
+    [SerializeField] private GameObject dockSpacePrefab;
 
     /// <summary>
     /// Add a certain amount of spaces to the dock
@@ -119,6 +124,10 @@ public class Dock : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Check if all shooters stopped firing for more than x amount of time
+    /// </summary>
+    /// <returns></returns>
     public bool EveryShooterStoppedFiring()
     {
         foreach (DockSpace space in Spaces)
@@ -166,7 +175,8 @@ public class Dock : MonoBehaviour
 
     private IEnumerator MergeShooterAnimation(int mergingBlockIndex, ShooterBlock shooterBlock)
     {
-        const float duration = 0.5f;
+        AudioManager.Instance.PlaySFX(mergeShootersSFX);
+        const float duration = 0.3f;
         float counter = 0;
         Vector3 startingPosition = Spaces[mergingBlockIndex].ShooterBlock.transform.localPosition;
 

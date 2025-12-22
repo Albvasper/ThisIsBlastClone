@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-// TODO: Remove win and lose condition form here!
 /// <summary>
 /// Sets up level and tracks player progress through a level.
 /// </summary>
@@ -16,8 +14,6 @@ public class LevelManager : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Dock dock;
     [SerializeField] private Inventory inventory;
-    // TODO: MOVE THIS TO UI MANAGER!
-    [SerializeField] private Image progressBar;
 
     private GridManager gridManager;
     private UIManager uiManager;
@@ -29,8 +25,6 @@ public class LevelManager : MonoBehaviour
     {
         gridManager = GetComponent<GridManager>();
         uiManager = GetComponent<UIManager>();
-        progressBar.fillAmount = progress;
-
     }
 
     private void Start()
@@ -52,7 +46,7 @@ public class LevelManager : MonoBehaviour
     public void MakeProgress()
     {
         progress++;
-        progressBar.fillAmount = progress / maxProgress;
+        uiManager.UpdateProgressBar(progress, maxProgress);
         CheckWinCondition();
     }
 
@@ -63,6 +57,8 @@ public class LevelManager : MonoBehaviour
 
     public void RetryLevel()
     {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 
     public void CheckGameOverCondition()

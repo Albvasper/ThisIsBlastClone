@@ -15,6 +15,9 @@ public enum BlockColor
     None
 }
 
+/// <summary>
+/// When destroyed helps the player progress through levels
+/// </summary>
 public class Block : MonoBehaviour
 {
     [Header("Properties")]
@@ -85,7 +88,7 @@ public class Block : MonoBehaviour
         Quaternion finalRotation = transform.rotation * 
             Quaternion.Euler( 0, 0, Random.Range(-impactRotation, impactRotation));
         
-        while(counter < duration)
+        while (counter < duration)
         {
             counter += Time.deltaTime;
             transform.localPosition = Vector3.Lerp(startingPosition, finalPosition, counter/duration);

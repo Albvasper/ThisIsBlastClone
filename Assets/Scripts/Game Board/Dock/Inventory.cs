@@ -10,6 +10,7 @@ public class Inventory : MonoBehaviour
     public ShooterBlock[,] grid { get; private set; }
     [SerializeField] private float blockSpacing = 1.2f;
     [SerializeField] private Dock dock;
+    [SerializeField] private AudioClip deployShooterSFX;
 
     private int gridX;
     private int gridY;
@@ -122,11 +123,13 @@ public class Inventory : MonoBehaviour
 
     // Deploy connected shooters on dock. First remove them form the inventory and then assign them to a dock space.
     private void DeployConnectedShooter(ConnectedShooterBlock connected, DockSpace dockSpace1, DockSpace dockSpace2)
-    {
+    {   
+        AudioManager.Instance.PlaySFX(deployShooterSFX);
         RemoveFromShooterFromInventory(connected);
         RemoveFromShooterFromInventory(connected.OtherShooterBlock);
         dockSpace1.AssignShooterBlock(connected);
         dockSpace2.AssignShooterBlock(connected.OtherShooterBlock);
+        AudioManager.Instance.PlaySFX(deployShooterSFX);
     }   
 
     // If the shooter is a single shooter try to deploy it
@@ -138,7 +141,8 @@ public class Inventory : MonoBehaviour
         DockSpace dockSpace = dock.CheckForFreeSpace();
         if (dockSpace == null)
             return;
-
+        
+        AudioManager.Instance.PlaySFX(deployShooterSFX);
         dockSpace.AssignShooterBlock(shooterBlock);
         RemoveFromShooterFromInventory(shooterBlock);
         dock.CheckForShooterMerges();
