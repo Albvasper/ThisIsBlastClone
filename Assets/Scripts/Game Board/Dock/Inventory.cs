@@ -291,7 +291,10 @@ public class Inventory : MonoBehaviour
                 continue;
             shooter.gameObject.layer = clickableLayer;
             if (shooter.supriseShooter)
+            {
                 shooter.AssignMaterial(shooter.Color);
+                shooter.TurnOnAmmoCounter();
+            }
             shooter.readyToDeploy = true;
         }
     }

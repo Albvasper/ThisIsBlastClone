@@ -11,6 +11,7 @@ public class ShooterBlock : Block
     public bool supriseShooter;
     public bool OnDock;
     public int Ammo { get; private set; } = 0;
+    public bool IsFiring { get; private set; } = false;
 
     [Range(0f, 1f) ][SerializeField] private float firingRate = 0.3f;
     [Range(0f, 100f) ][SerializeField] private float firingForce = 50f;
@@ -35,7 +36,10 @@ public class ShooterBlock : Block
     private void Start()
     {
         if (supriseShooter)
+        {
             meshRenderer.material = GridManager.Instance.Surprise;
+            ammoCounter.gameObject.SetActive(false);
+        }
         else
             AssignMaterial(Color);
     }
@@ -80,7 +84,13 @@ public class ShooterBlock : Block
     /// <returns></returns>
     public bool HasStoppedShooting()
     {
-        return Time.time - lastFireTime >= IdleThreshold;
+        return !IsFiring && Time.time - lastFireTime >= IdleThreshold;
+    }
+
+
+    public void TurnOnAmmoCounter()
+    {
+        ammoCounter.gameObject.SetActive(true);
     }
 
     public void Die(int direction)
@@ -116,7 +126,8 @@ public class ShooterBlock : Block
             if (target == null || !IsValidTarget(target))
             {
                 AimForNextBlock();
-                //yield return new WaitForSeconds(firingRate);
+                
+                yield return null;
                 continue;
             }
 
@@ -180,6 +191,8 @@ public class ShooterBlock : Block
 
     private void AimForNextBlock()
     {
+        IsFiring = false;
+        lastFireTime = Time.time;
         // Move on the Z axis first
         currentTargetZ++;
 
@@ -198,7 +211,7 @@ public class ShooterBlock : Block
 
     private void ShootAt(Block targetBlock)
     {
-        lastFireTime = Time.time;
+        IsFiring = true;
         if (targetBlock != null)
         {
             if (targetBlock.Color != BlockColor.PiggyBank)
