@@ -9,6 +9,7 @@ using System.Collections;
 public class UIManager : MonoBehaviour
 {
     [Header("UI Components")]
+    [SerializeField] private GameObject tutorialScreen;
     [SerializeField] private GameObject winScreen;
     [SerializeField] private GameObject gameOverScreen;
     [SerializeField] private TextMeshProUGUI currentLevelText;

@@ -40,6 +40,14 @@ public class ShooterBlock : Block
             AssignMaterial(Color);
     }
 
+    private void OnMouseDown()
+    {
+        if (TutorialManager.Instance.tutorialRequired)
+        {
+            TutorialManager.Instance.ProgressTutorial();
+        }
+    }
+
     public void AssignAmmo(int ammo)
     {
         Ammo = ammo;

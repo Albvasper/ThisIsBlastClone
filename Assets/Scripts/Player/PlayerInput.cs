@@ -1,5 +1,4 @@
 using UnityEngine;
-using Unity.VisualScripting;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -23,7 +22,8 @@ public class PlayerInput : MonoBehaviour
             {
                 if (hit.collider.gameObject)
                 {
-                    inventory.TryDeployShooterBlock(hit.collider.gameObject.GetComponent<ShooterBlock>());
+                    ShooterBlock shooterBlock = hit.collider.gameObject.GetComponent<ShooterBlock>();
+                    inventory.TryDeployShooterBlock(shooterBlock);
                 }
             }
         }
