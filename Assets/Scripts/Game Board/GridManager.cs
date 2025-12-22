@@ -88,7 +88,7 @@ public class GridManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Deletes a block on the grid waiting one frame
+    /// Deletes a block on the grid
     /// </summary>
     /// <param name="block">Block that will be removed</param>
     public void RemoveBlock(Block block)
@@ -104,19 +104,40 @@ public class GridManager : MonoBehaviour
                     if (grid[x, y, z] == block)
                     {
                         grid[x, y, z] = null;
-                        StartCoroutine(DropDownColumn(x, z));
+                        DropDownColumn(x, z);
+                        return;
                     }
                 }
             }
         }
     }
 
-    private IEnumerator DropDownColumn(int x, int z)
+    /// <summary>
+    /// Recieve the color and return the material form that color.
+    /// </summary>
+    /// <param name="color">Color enum.</param>
+    /// <returns></returns>
+    public Material GetMaterial(BlockColor color)
     {
-        const float Delay = 0.35f;
-        int targetY = 0;
+        return color switch
+        {
+            BlockColor.Red => Red,
+            BlockColor.Yellow => Yellow,
+            BlockColor.Blue => Blue,
+            BlockColor.Green => Green,
+            BlockColor.Orange => Orange,
+            BlockColor.Pink => Pink,
+            BlockColor.Cyan => Cyan,
+            BlockColor.Purple => Purple,
+            BlockColor.PiggyBank => null,
+            BlockColor.None => null,
+            _ => null,
+        };
+    }
 
-        yield return new WaitForSeconds(Delay);
+    private void DropDownColumn(int x, int z)
+    {   
+        int targetY = 0;
         for (int y = 0; y < gridY; y++)
         {
             Block block = grid[x, y, z];
@@ -127,17 +148,20 @@ public class GridManager : MonoBehaviour
             {
                 grid[x, targetY, z] = block;
                 grid[x, y, z] = null;
-                MoveBlockToNewCell(block, x, targetY, z);
+                StartCoroutine(MoveBlockToNewCell(block, x, targetY, z));
             }
             targetY++;
         }
     }
 
     // Assign new position to block and start movement
-    private void MoveBlockToNewCell(Block block, int x, int y, int z)
+    private IEnumerator MoveBlockToNewCell(Block block, int x, int y, int z)
     {
         Vector3 newPos = GridToWorld(x, y, z);
         float moveDuration = 0.15f;
+        float animationDelay = 0.35f;
+
+        yield return new WaitForSeconds(animationDelay);
         StartCoroutine(LerpBlock(block, newPos, moveDuration));
     }
 
@@ -154,16 +178,15 @@ public class GridManager : MonoBehaviour
     // Move block slowly to new position
     private IEnumerator LerpBlock(Block block, Vector3 targetPosition, float duration)
     {
-        Vector3 startPosition = block.transform.position;
         float elapsed = 0f;
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float time = elapsed / duration;
-            block.transform.position = Vector3.Lerp(startPosition, targetPosition, time);
+            if (block != null)
+                block.transform.position = Vector3.Lerp(block.transform.position, targetPosition, time);
             yield return null;
         }
-        block.transform.position = targetPosition;
     }
 }

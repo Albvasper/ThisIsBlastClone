@@ -38,6 +38,34 @@ public class Dock : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Return a 2 free spaces on dock for connected shooters.
+    /// </summary>
+    /// <returns></returns>
+    public (DockSpace space1, DockSpace space2) CheckForFreeSpaces()
+    {
+        DockSpace first = null;
+        DockSpace second = null;
+
+        foreach (DockSpace dockSpace in Spaces)
+        {
+            if (dockSpace.ShooterBlock != null)
+                continue;
+            
+            if (first == null)
+            {
+                first = dockSpace;
+            }
+            else
+            {
+                second = dockSpace;
+                return (first, second);
+            }
+        }
+
+        return (null, null);
+    }
+
     private void ArrangeDockSpaces()
     {
         float dockStartX = 0f;

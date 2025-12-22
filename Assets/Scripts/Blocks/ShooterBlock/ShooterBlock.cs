@@ -7,10 +7,10 @@ using System.Collections;
 /// </summary>
 public class ShooterBlock : Block
 {
+    public bool readyToDeploy; 
     public bool supriseShooter;
     public bool OnDock;
     public int Ammo { get; private set; } = 0;
-
     [Range(0f, 1f) ][SerializeField] private float firingRate = 0.3f;
     [Range(0f, 100f) ][SerializeField] private float firingForce = 50f;
 
@@ -25,6 +25,7 @@ public class ShooterBlock : Block
     {
         base.Awake();
         OnDock = false;
+        readyToDeploy = false;
     }
 
     private void Start()

@@ -16,10 +16,10 @@ public class LevelManager : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Dock dock;
     [SerializeField] private Inventory inventory;
-    [SerializeField] private GridManager gridManager;
     // TODO: MOVE THIS TO UI MANAGER!
     [SerializeField] private Image progressBar;
 
+    private GridManager gridManager;
     private UIManager uiManager;
     private float progress = 0f;
     private float maxProgress;

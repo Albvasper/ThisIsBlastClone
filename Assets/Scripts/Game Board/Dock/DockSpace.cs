@@ -29,8 +29,8 @@ public class DockSpace : MonoBehaviour
     {
         // Move shooter to dock space
         ShooterBlock = shooterBlock;
-        shooterBlock.transform.position = transform.position;
         shooterBlock.OnDock = true;
+        shooterBlock.transform.position = transform.position;
         shooterBlock.ReadyToShoot();
     }
 
@@ -52,6 +52,7 @@ public class DockSpace : MonoBehaviour
         }
     }
     
+    // Calculate in which direction the shooter will go once empty. (Left or right)
     private int CalculateShooterRemovalDirection()
     {
         int dockSpaces = dock.Spaces.Count - 1;

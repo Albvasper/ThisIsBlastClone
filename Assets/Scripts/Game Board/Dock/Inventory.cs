@@ -44,16 +44,10 @@ public class Inventory : MonoBehaviour
     /// <param name="shooterBlock">Shooter block that will be deployed.</param>
     public void TryDeployShooterBlock(ShooterBlock shooterBlock)
     {   
-        DockSpace freeDockSpace = dock.CheckForFreeSpace();
-        // If there free spaces on the dock, deploy the shooter block
-        if (freeDockSpace != null && !shooterBlock.OnDock)
-        {   
-            // Move shooter to dock
-            freeDockSpace.AssignShooterBlock(shooterBlock);
-            RemoveFromShooterFromInventory(shooterBlock);
-            // Check for merges
-            dock.CheckForShooterMerges();
-        }
+        if (TryDeployConnectedShooter(shooterBlock))
+            return;
+
+        TryDeploySingleShooter(shooterBlock);
     }
 
     // Get shooter blocks from the list and put them into the array
@@ -84,13 +78,73 @@ public class Inventory : MonoBehaviour
                 ShooterBlock block = grid[x, y];
                 if (block == null)
                     continue;
-
                 MoveShooterToNewCell(block, x, y);
             }
         }
         MakeTopLayerClickable();
     }
 
+    // If the shooter is a connected shooter try to deploy it. If it is a connected shooter return true.
+    private bool TryDeployConnectedShooter(ShooterBlock shooterBlock)
+    {
+        ConnectedShooterBlock connectedShooter = shooterBlock.GetComponent<ConnectedShooterBlock>();
+        if (connectedShooter == null)
+            return false;
+
+        if (!CanDeployConnectedShooter(connectedShooter))
+            return true; 
+
+        var (dockSpace1, dockSpace2) = dock.CheckForFreeSpaces();
+        if (dockSpace1 == null || dockSpace2 == null)
+            return true;
+
+        DeployConnectedShooter(connectedShooter, dockSpace1, dockSpace2);
+        return true;
+    }
+
+    // Check if the connected shooter can be deployed following certain rules.
+    private bool CanDeployConnectedShooter(ConnectedShooterBlock connectedShooter)
+    {
+        if (connectedShooter.OnDock)
+        {
+            return false;
+        }
+        if (connectedShooter.OtherShooterBlock == null)
+        {
+            return false;
+        }
+        if (!connectedShooter.OtherShooterBlock.readyToDeploy)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    // Deploy connected shooters on dock. First remove them form the inventory and then assign them to a dock space.
+    private void DeployConnectedShooter(ConnectedShooterBlock connected, DockSpace dockSpace1, DockSpace dockSpace2)
+    {
+        RemoveFromShooterFromInventory(connected);
+        RemoveFromShooterFromInventory(connected.OtherShooterBlock);
+        dockSpace1.AssignShooterBlock(connected);
+        dockSpace2.AssignShooterBlock(connected.OtherShooterBlock);
+    }   
+
+    // If the shooter is a single shooter try to deploy it
+    private void TryDeploySingleShooter(ShooterBlock shooterBlock)
+    {
+        if (shooterBlock.OnDock)
+            return;
+
+        DockSpace dockSpace = dock.CheckForFreeSpace();
+        if (dockSpace == null)
+            return;
+
+        dockSpace.AssignShooterBlock(shooterBlock);
+        RemoveFromShooterFromInventory(shooterBlock);
+        dock.CheckForShooterMerges();
+    }
+
+    // Fill shooters with ammo by counting the blocks on the grid.
     private void StackShootersAmmo()
     {
         Dictionary<BlockColor, int> colorsOnGrid = CountBlocksByColor();
@@ -159,6 +213,8 @@ public class Inventory : MonoBehaviour
     // Remove shooter block from inventory
     private void RemoveFromShooterFromInventory(ShooterBlock block)
     {
+        availableShooterBlocks.Remove(block);
+
         for (int x = 0; x < gridX; x++)
         {
             for (int y = gridY - 1; y >= 0; y--)
@@ -185,12 +241,13 @@ public class Inventory : MonoBehaviour
             }
         }
         grid[column, gridY - 1] = null;
-        ArrangeGrid();
+        //ArrangeGrid();
     }
     
     // Assign new position to shooter block
     private void MoveShooterToNewCell(ShooterBlock shooter, int x, int y)
     {
+
         float totalWidth = (gridX - 1) * blockSpacing;
         float startX = transform.position.x - totalWidth / 2f;
         float startY = transform.position.y;
@@ -229,7 +286,9 @@ public class Inventory : MonoBehaviour
             if (shooter == null) 
                 continue;
             shooter.gameObject.layer = clickableLayer;
-            shooter.AssignMaterial(shooter.Color);
+            if (shooter.supriseShooter)
+                shooter.AssignMaterial(shooter.Color);
+            shooter.readyToDeploy = true;
         }
     }
 }
