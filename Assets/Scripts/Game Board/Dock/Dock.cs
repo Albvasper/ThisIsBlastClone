@@ -48,21 +48,13 @@ public class Dock : MonoBehaviour
     /// <returns></returns>
     public (DockSpace space1, DockSpace space2) CheckForFreeSpaces()
     {
-        DockSpace first = null;
-        DockSpace second = null;
-
-        foreach (DockSpace dockSpace in Spaces)
+        for (int i = 0; i < Spaces.Count - 1; i++)
         {
-            if (dockSpace.ShooterBlock != null)
-                continue;
-            
-            if (first == null)
+            DockSpace first = Spaces[i];
+            DockSpace second = Spaces[i + 1];
+
+            if (first.ShooterBlock == null && second.ShooterBlock == null)
             {
-                first = dockSpace;
-            }
-            else
-            {
-                second = dockSpace;
                 return (first, second);
             }
         }
@@ -83,7 +75,7 @@ public class Dock : MonoBehaviour
         for (int i = 0; i < Spaces.Count; i++)
         {
             ShooterBlock shooter = Spaces[i].ShooterBlock;
-            if (shooter == null)
+            if (shooter == null || !IsMergeableShooter(shooter))
             {
                 Reset();
                 continue;
@@ -109,7 +101,7 @@ public class Dock : MonoBehaviour
             indices.Clear();
         }
     }
-    
+
     /// <summary>
     /// Return if dock spaces are full or not
     /// </summary>
@@ -137,7 +129,7 @@ public class Dock : MonoBehaviour
         }
         return true;
     }
-
+    
     // Visually space out dock spaces
     private void ArrangeDockSpaces()
     {
@@ -152,6 +144,11 @@ public class Dock : MonoBehaviour
             float x = centerX + offset;
             Spaces[i].transform.position = new Vector3(x, transform.position.y, transform.position.z);
         }
+    }
+
+    private bool IsMergeableShooter(ShooterBlock shooter)
+    {
+        return shooter != null && shooter is not ConnectedShooterBlock;
     }
 
     private void MergeShooters(List<int> indices)

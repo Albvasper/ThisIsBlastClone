@@ -8,7 +8,7 @@ public class PiggyBank : Block
 {
     protected override void Awake()
     {
-        maxHealth = 10;
+        maxHealth = 25;
         base.Awake();
     }
 
@@ -26,7 +26,7 @@ public class PiggyBank : Block
 
     private void TakingDamageAnimation()
     {
-        const float SizeIncrement = 0.1f;
+        const float SizeIncrement = 0.03f;
         transform.localScale = transform.localScale + new Vector3(SizeIncrement, SizeIncrement, SizeIncrement);
     }
 }

@@ -37,7 +37,7 @@ public class LevelManager : MonoBehaviour
 
     private void Update()
     {
-        CheckGameOverCondition();
+        //CheckGameOverCondition();
     }
 
     /// <summary>

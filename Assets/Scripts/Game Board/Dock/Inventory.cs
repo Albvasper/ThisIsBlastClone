@@ -104,21 +104,64 @@ public class Inventory : MonoBehaviour
     }
 
     // Check if the connected shooter can be deployed following certain rules.
-    private bool CanDeployConnectedShooter(ConnectedShooterBlock connectedShooter)
+    private bool CanDeployConnectedShooter(ConnectedShooterBlock connected)
     {
-        if (connectedShooter.OnDock)
-        {
+        if (connected.OnDock)
             return false;
-        }
-        if (connectedShooter.OtherShooterBlock == null)
-        {
+
+        if (connected.OtherShooterBlock == null)
             return false;
-        }
-        if (!connectedShooter.OtherShooterBlock.readyToDeploy)
-        {
+
+        if (!AreValidConnectedPositions(
+                connected,
+                connected.OtherShooterBlock))
             return false;
-        }
+
         return true;
+    }
+
+
+    private bool TryGetGridPosition(ShooterBlock block, out int x, out int y)
+    {
+        for (int i = 0; i < gridX; i++)
+        {
+            for (int j = 0; j < gridY; j++)
+            {
+                if (grid[i, j] == block)
+                {
+                    x = i;
+                    y = j;
+                    return true;
+                }
+            }
+        }
+        x = -1;
+        y = -1;
+        return false;
+    }
+
+    private bool AreValidConnectedPositions(
+    ShooterBlock a,
+    ShooterBlock b
+    )
+    {
+        if (!TryGetGridPosition(a, out int ax, out int ay))
+            return false;
+
+        if (!TryGetGridPosition(b, out int bx, out int by))
+            return false;
+
+        // Both on top row
+        if (ay == 0 && by == 0)
+            return true;
+
+        // Same column, one directly below the other
+        if (ax == bx && Mathf.Abs(ay - by) == 1)
+        {
+            // One of them must be on top row
+            return ay == 0 || by == 0;
+        }
+        return false;
     }
 
     // Deploy connected shooters on dock. First remove them form the inventory and then assign them to a dock space.
