@@ -11,6 +11,7 @@ public class ShooterBlock : Block
     public bool supriseShooter;
     public bool OnDock;
     public int Ammo { get; private set; } = 0;
+
     [Range(0f, 1f) ][SerializeField] private float firingRate = 0.3f;
     [Range(0f, 100f) ][SerializeField] private float firingForce = 50f;
 
@@ -20,6 +21,8 @@ public class ShooterBlock : Block
 
     private int currentTargetX = 0;
     private int currentTargetZ = 0;
+    private float lastFireTime;
+    private const float IdleThreshold = 2f;
 
     protected override void Awake()
     {
@@ -62,6 +65,15 @@ public class ShooterBlock : Block
         StopAllCoroutines();
     }
     
+    /// <summary>
+    /// Return if shooter stopped firing for a couple of seconds.
+    /// </summary>
+    /// <returns></returns>
+    public bool HasStoppedShooting()
+    {
+        return Time.time - lastFireTime >= IdleThreshold;
+    }
+
     public void Die(int direction)
     {
         StartCoroutine(DeathAnimation(direction));
@@ -90,7 +102,7 @@ public class ShooterBlock : Block
         {
             Block target = GetBlock();
             
-            if (target == null)
+            if (target == null || !IsValidTarget(target))
             {
                 AimForNextBlock();
                 yield return new WaitForSeconds(firingRate);
@@ -138,9 +150,20 @@ public class ShooterBlock : Block
     }
 
     // Returns if the current block is a piggy bank or a normal block
+    private bool IsValidTarget(Block block)
+    {
+        return IsPiggyBank(block) || IsSameColor(block);
+    }
+
+    // Returns if the current block is the same color as the shooter
+    private bool IsSameColor(Block block)
+    {
+        return block.Color == Color;
+    }
+    // Returns if the current block is a piggy bank
     private bool IsPiggyBank(Block block)
     {
-        return block != null && block.Color == BlockColor.PiggyBank;
+        return block.Color == BlockColor.PiggyBank;
     }
 
     private void AimForNextBlock()
@@ -163,6 +186,7 @@ public class ShooterBlock : Block
 
     private void ShootAt(Block targetBlock)
     {
+        lastFireTime = Time.time;
         if (targetBlock != null)
         {
             if (targetBlock.Color != BlockColor.PiggyBank)

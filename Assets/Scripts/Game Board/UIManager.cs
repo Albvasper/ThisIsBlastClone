@@ -14,12 +14,12 @@ public class UIManager : MonoBehaviour
 
     public void ShowWinScreen()
     {
-        StartCoroutine(DisplayScreenSlowly(winScreen));
+        StartCoroutine(DisplayScreenSlowly(winScreen, 2f));
     }
 
     public void ShowGameOverScreen()
     {
-        StartCoroutine(DisplayScreenSlowly(gameOverScreen));
+        StartCoroutine(DisplayScreenSlowly(gameOverScreen, 0f));
     }
 
     public void NextLevelButtonClicked()
@@ -32,9 +32,8 @@ public class UIManager : MonoBehaviour
         levelManager.RetryLevel();
     }
 
-    private IEnumerator DisplayScreenSlowly(GameObject screen)
+    private IEnumerator DisplayScreenSlowly(GameObject screen, float delay)
     {
-        float delay = 2f;
         yield return new WaitForSeconds(delay);
         screen.SetActive(true);
     }

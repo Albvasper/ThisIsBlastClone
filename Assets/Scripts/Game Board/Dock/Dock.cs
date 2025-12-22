@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 
 public class Dock : MonoBehaviour
 {
@@ -66,21 +65,6 @@ public class Dock : MonoBehaviour
         return (null, null);
     }
 
-    private void ArrangeDockSpaces()
-    {
-        float dockStartX = 0f;
-        float dockEndX = 9f;
-        float centerX = (dockStartX + dockEndX) * 0.5f;
-        float spacing = 2.25f;
-
-        for (int i = 0; i < Spaces.Count; i++)
-        {
-            float offset = (i - (Spaces.Count - 1) / 2f) * spacing;
-            float x = centerX + offset;
-            Spaces[i].transform.position = new Vector3(x, transform.position.y, transform.position.z);
-        }
-    }
-
     /// <summary>
     // Iterate through available shooters and compares their color. If 3 are the same color: merge them.
     /// </summary>
@@ -118,6 +102,46 @@ public class Dock : MonoBehaviour
             count = 0;
             currentColor = BlockColor.None;
             indices.Clear();
+        }
+    }
+    
+    /// <summary>
+    /// Return if dock spaces are full or not
+    /// </summary>
+    /// <returns></returns>
+    public bool IsFull()
+    {
+        foreach (DockSpace space in Spaces)
+        {
+            if (space.ShooterBlock == null)
+                return false;
+        }
+        return true;
+    }
+
+    public bool EveryShooterStoppedFiring()
+    {
+        foreach (DockSpace space in Spaces)
+        {
+            if (!space.ShooterBlock.HasStoppedShooting())
+                return false;
+        }
+        return true;
+    }
+
+    // Visually space out dock spaces
+    private void ArrangeDockSpaces()
+    {
+        float dockStartX = 0f;
+        float dockEndX = 9f;
+        float centerX = (dockStartX + dockEndX) * 0.5f;
+        float spacing = 2.25f;
+
+        for (int i = 0; i < Spaces.Count; i++)
+        {
+            float offset = (i - (Spaces.Count - 1) / 2f) * spacing;
+            float x = centerX + offset;
+            Spaces[i].transform.position = new Vector3(x, transform.position.y, transform.position.z);
         }
     }
 

@@ -23,6 +23,7 @@ public class LevelManager : MonoBehaviour
     private UIManager uiManager;
     private float progress = 0f;
     private float maxProgress;
+    private bool gameIsOver = false;
 
     private void Awake()
     {
@@ -38,6 +39,11 @@ public class LevelManager : MonoBehaviour
         inventory.Initialize(numberOfInventoryCols);
         dock.Initialize(numberOfDockSlots);
         maxProgress = GridManager.Instance.grid.Length;
+    }
+
+    private void Update()
+    {
+        CheckGameOverCondition();
     }
 
     /// <summary>
@@ -61,6 +67,14 @@ public class LevelManager : MonoBehaviour
 
     public void CheckGameOverCondition()
     {
+        if (gameIsOver)
+            return;
+
+        if (dock.IsFull() && dock.EveryShooterStoppedFiring())
+        {   
+            gameIsOver = true;
+            uiManager.ShowGameOverScreen();
+        }
     }
     
     private void CheckWinCondition()
